@@ -1,0 +1,14 @@
+.DS_Store
+*/**/.DS_Store
+.Rhistory
+.RData
+.Rproj.user
+
+outline.*
+
+# quarto cache
+*/*_cache
+
+# Rmd intermediate files
+data/files/*.log
+data/files/*.tex

@@ -1,0 +1,8 @@
+---
+title: "test document"
+author: "Hauke Licht"
+date: "2024-04-17"
+output: word_document
+---
+
+This is just a text document for illustrating how to read word and PDF files into R.

@@ -1,0 +1,7 @@
+---
+title: "Test file"
+author: "Hauke Licht"
+format: docx
+---
+
+This is just a text document for illustrating how to read word and PDF files into R.

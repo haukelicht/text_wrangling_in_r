@@ -1,0 +1,112 @@
+---
+title: "Messed up encodings, broken characters"
+author: "Hauke Licht"
+institute: "University of Cologne"
+date: last-modified
+date-format: "MMMM D, YYYY"
+format:
+  html:
+    standalone: true
+    embed-resources: true
+execute:
+  warning: false
+---
+
+## Setup
+
+```{r}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+```
+
+```{r}
+library(knitr)
+library(kableExtra)
+
+html_table <- function(x, width = NULL, ...) {
+  if (!is.null(width) && !grepl("px$", width)) {
+    width <- paste0(width, "px")
+  }
+  
+  kable(x, ...) |> 
+    kableExtra::kable_styling(
+      bootstrap_options = "striped", 
+      full_width = is.null(width)
+    ) |> 
+    kableExtra::scroll_box(
+      width = width, 
+      height = "200px"
+    )
+}
+```
+
+## Example: German manifesto data in the *Comparative Agendas Project* corpus
+
+Let's download the German party manifesto data from the *Comparative Agendas Project* (CAP) (see https://www.comparativeagendas.net/datasets_codebooks:
+
+```{r}
+#| cache: true
+df <- read_csv("https://comparativeagendas.s3.amazonaws.com/datasetfiles/manifesto_1949-2013_website-release_2.5_2_3.csv")
+```
+
+The data contains the text of party manifestos in column "sentence\_text":
+
+```{r}
+df |> 
+  select(sentence_text) |> 
+  head()
+```
+
+To see check whether everything went well with the encoding the text data when te project team collected it, I typically first tabulate unique characters in the text data and their frequencies:
+
+```{r}
+# split sentences into characters
+chars <- strsplit(df$sentence_text, split = "")
+# unlist and count characters' frequencies
+chars_tab <- table(unlist(chars))
+# sort by frequency
+chars_tab <- sort(chars_tab, decreasing = TRUE)
+
+head(chars_tab)
+```
+
+Let's discard all regular latin letters, numbers, and valid punctuation characters and look at the remaining characters to check if there are some weird ones:
+
+```{r}
+tmp <- chars_tab[grep("[^a-zA-Z0-9.:,;!?()'\"]", names(chars_tab))]
+tmp |> 
+  as.data.frame() |> 
+  html_table(width = "500px")
+```
+
+As a German speaker, you might me supprised to see the characters "â", "û", "ô", "ñ" and "Ô" occurring in the data.
+So let's inspect sentences containing these characters:
+
+```{r}
+df |> 
+  filter(grepl("â|û|ô|ñ|Ô", sentence_text)) |>
+  transmute(
+    weird_character = str_extract(sentence_text, "â|û|ô|ñ|Ô"),
+    sentence_text
+  ) |>
+  group_by(weird_character) %>%
+  sample_n(2, replace = TRUE) |> 
+  distinct() |> 
+  html_table()
+```
+
+## Exercise: The UK *Hose of Commons* corpus in in the ParlSpeech2 dataset
+
+1. get the sample of the ParlSpeech2 *UK Hose of Commons* corpus I have created
+2. compute single characters' frequencies (from values in column "text")
+3. identify "weird" characters (those you wouldn't expect in an English-language text corpus)
+4. inspect speeches containing these characters to check if they are valid or the result of messed up encoding
+
+```{r}
+#| eval: false
+fp <- file.path("..", "data", "datasets", "parlspeech2_gbr_sample.tsv")
+df <- read_tsv(fp)
+```
+
