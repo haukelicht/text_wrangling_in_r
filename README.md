@@ -16,9 +16,9 @@ Double-click on the text_wrangling_in_r.Rproj file to open the project in RStudi
 This project uses the `renv` package to manage dependencies.
 To set up the project environment, follow these steps:
 
-1. Install the `renv` package if you haven't already: `r install.packages("renv")`
+1. Install the `renv` package if you haven't already: `install.packages("renv")`
 2. If you haven't opened the folder as a project in RStudio, ensure that your working directory is set to the project directory.
-3. Run the following command to install the required packages: `r renv::restore("renv.lock")`
+3. Run the following command to install the required packages: `renv::restore()` and select "Yes" if prompted
 
 ### Required packages
 
