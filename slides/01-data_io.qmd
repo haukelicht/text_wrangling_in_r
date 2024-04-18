@@ -678,3 +678,37 @@ labels_df |>
 # combine texts and labels
 gold_df <- inner_join(labels_df, sentences_df, by = "id")
 ```
+
+## Download and extracting from a ZIP file
+
+We can download ZIP archives and extract selected files in R
+
+#### Example 
+
+We will use the replication data for the article 
+
+> Benoit, K., Conway, D., Lauderdale, B. E., Laver, M., & Mikhaylov, S. (2016). Crowd-sourced Text Analysis: Reproducible and Agile Production of Political Data. _American Political Science Review_, 110(2), 278–295.
+      
+The Github repository is here https://github.com/kbenoit/CSTA-APSR
+
+```{r}
+url <- "https://github.com/kbenoit/CSTA-APSR/raw/4bc6cbc48a4eeff557cbb03b8ede73b29e36aa00/Data%20-%20CF%20jobs/CFjobresults.zip"
+
+# download 
+temp <- tempfile()
+download.file(url, temp, quiet = TRUE)
+
+# list contents
+conts <- unzip(temp, list = TRUE)$Name
+head(conts, 4)
+
+# extract and read selected file
+read_csv(unz(temp, "f240807.csv"))
+
+# remove ZIP in temporary location
+unlink(temp, recursive = TRUE)
+```
+
+
+
+
