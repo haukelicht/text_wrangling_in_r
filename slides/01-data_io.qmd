@@ -257,22 +257,24 @@ dir.exists("new_folder")
 - `readr::read_delim` for custom delimiters (e.g., ";" for semicolon-separated files)
 
 ```{r}
-# | warning: false
+#| warning: false
 library(readr)
 ```
 
 #### Examples
 
 ```{r}
+#| eval: false
 # read CSV file
-fp <- file.path("..", "data", "tabular", "test.csv")
+fp <- file.path("data", "tabular", "test.csv")
 df <- read_csv(fp)
 ```
 
 
 ```{r}
-# read CSV file
-fp <- file.path("..", "data", "tabular", "test.tsv")
+#| eval: false
+# read TSV file
+fp <- file.path("data", "tabular", "test.tsv")
 df <- read_tsv(fp)
 ```
 
@@ -286,9 +288,10 @@ df <- read_tsv(fp)
 #### Example
 
 ```{r}
+#| eval: false
 library(readxl)
 # read Excel file
-fp <- file.path("..", "data", "tabular", "test.xlsx")
+fp <- file.path("data", "tabular", "test.xlsx")
 df <- read_excel(fp)
 ```
 
@@ -578,7 +581,9 @@ df <- get_dataframe_by_doi(
   # use the file persistent ID to specify which file to download
   filedoi = persistent_id, 
   # pass the appropriate file reading function (from the readr package)
-  .f = read_tsv 
+  .f = read_tsv,
+  # specify concrete file version
+  version = "1.2"
 )
 ```
 

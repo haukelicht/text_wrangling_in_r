@@ -1,0 +1,458 @@
+---
+title: Regular Expressions
+author: Hauke Licht
+institute: University of Cologne
+date: last-modified
+date-format: "MMMM D, YYYY"
+format: 
+  revealjs:
+    fontsize: 20pt
+    standalone: true
+    embed-resources: true
+echo: true
+code-annotations: select
+---
+
+# Intro
+
+## Regular expressions 
+
+- regular expressions = `regex`
+- powerful tools for working with text data
+- allow to describe and identify patterns in text through **abstraction** 
+- makes pattern searching, replacing, and parsing much easier
+
+### What are regex and why do we need them
+
+- **Definition**: Regular expressions (short **regex**) are specialized symbols and operators that define a search pattern.
+- **Utility**: Useful for string searching and manipulation tasks in programming.
+- **Applications**: Validating text input, searching in documents, and transforming text data.
+
+---
+
+### Setup 
+
+```{r}
+library(stringr)
+```
+
+# Basics
+
+## The Placeholder `.`
+
+The dot `.` matches any single character except newline characters.
+
+#### Example
+
+the regex pattern "a.c", `.` will match any pattern that start with 'a', ends with 'c', and has an abritrary character in between
+
+```{r}
+text <- c("abc", "adc", "a?c", "a_c", "aӜc", "ac")
+grepl("a.c", text)
+```
+
+---
+
+## Special Symbols
+
+Special symbols in regex help to match specific types of characters like digits, words, or spaces.
+
+### Word Character `\\w`
+
+- `\\w` represents any word character which includes letters, digits, and the underscore
+
+#### Example
+
+```{r}
+text <- "Hello world 123!"
+str_extract_all(text, "\\w+")
+```
+
+---
+
+## Special Symbols
+
+Special symbols in regex help to match specific types of characters like digits, words, or spaces.
+
+### Digit `\\d`
+
+`\\d` represents any digit from 0 to 9
+
+#### Example
+
+```{r}
+text <- "In 2023, we 1½ million Euros."
+str_extract_all(text, "\\d+")
+```
+
+---
+
+## Special Symbols
+
+Special symbols in regex help to match specific types of characters like digits, words, or spaces.
+
+### Space `\\s` and Variants
+
+`\\s` is Geared towards identifying different types of spaces in text.
+
+#### Example 
+
+```{r}
+text <- "In 2023, we 1½ million     Euros."
+str_extract_all(text, "\\s+")
+```
+
+---
+
+## Special Symbols
+
+Special symbols in regex help to match specific types of characters like digits, words, or spaces.
+
+### Horizontal Space `\\h`
+
+`\\h` represents**: Any horizontal whitespace like regular spaces or tab characters.
+
+#### Example 
+
+```{r}
+text <- "Some text\t with a tab."
+str_extract_all(text, "\\h+")
+```
+
+---
+
+## Special Symbols
+
+Special symbols in regex help to match specific types of characters like digits, words, or spaces.
+
+### Vertical Space `\\v`
+
+`\\v` represents any vertical white spaces like line breaks.
+
+#### Example
+
+```{r}
+text <- "Line one\nLine two\r\n"
+str_extract_all(text, "\\v+")
+```
+
+
+---
+
+---
+
+## Repetition Quantifiers
+
+**Repetition quantifiers** specify how many times elements can repeat in sequence
+
+### Zero times or more: `*`
+
+Matches 0 or more repetitions.
+
+#### Example
+
+`"lo*"` matches any 'l' followed by zero or more 'o's.
+
+```{r}
+text <- "hellooo"
+str_extract_all(text, "lo*")
+```
+
+---
+
+## Repetition Quantifiers
+
+**Repetition quantifiers** specify how many times elements can repeat in sequence
+
+### Zero or one time: `?`
+
+#### Example
+
+`"lo?"` matches any 'l' followed by none or one 'o'.
+
+```{r}
+text <- "hellooo"
+str_extract_all(text, "lo?")
+```
+
+## Repetition Quantifiers
+
+**Repetition quantifiers** specify how many times elements can repeat in sequence
+
+### One time or more: `+`
+
+`+` matches one or more repetitions.
+
+#### Example
+
+`"lo+"` matches 'l' followed by one or more 'o's.
+
+```{r}
+text <- "hellooo"
+str_extract_all(text, "lo+")
+```
+
+## Repetition Quantifiers
+
+**Repetition quantifiers** specify how many times elements can repeat in sequence
+
+### Between min and max times: `{min,max}`
+
+`{min,max}` matches between a minimum and maximum number of occurrences.
+
+#### Example
+
+`"lo{1,2}`" matches 'l' folloewd by between 1 and 2 'o's
+
+```{r}
+text <- "hellooo"
+str_extract_all(text, "lo{1,2}")
+```
+
+<br>
+
+*Note:* `{0,1}` is equivalent to using `?`
+
+---
+
+## Defining Character Sets and Ranges with `[]`
+
+- `[]` Allows you to match specific sets or ranges of characters
+- just list all characters or regex operators that should be matched
+
+<br>
+
+#### Example 
+
+```{r}
+text <- "Match1234!"
+str_extract_all(text, "[M012!]+")
+```
+
+<br>
+
+*Note:* the set can also include special regex operators
+
+```{r}
+text <- "Match1234!"
+str_extract_all(text, "[\\w\\d]+")
+```
+
+---
+
+## Defining Character Sets and Ranges with `[]`
+
+- `[]` Allows you to match specific sets or ranges of characters
+- just list all characters
+- or use `-` to define ranges
+
+#### Examples
+
+- **Numbers**: `[0-9]` matches any digit.
+- **Lower case letters**: `[a-z]` matches any lower case letter.
+- **Upper case letters**: `[A-Z]` matches any upper case letter.
+
+```{r}
+text <- "Match1234!"
+str_extract_all(text, "[a-zA-Z0-9]+")
+```
+
+<br>
+
+
+*Note*: Because `-` has the function of defining ranges, you need to include it last in a set when you want to match it literally
+
+```{r}
+text <- "Match-1234!"
+str_extract_all(text, "[a-z-]+")
+```
+
+---
+
+## Pre-defined Character Sets
+
+`[]` Allows you to match specific sets or ranges of characters
+
+#### Special sets
+
+- **Alpha characters**: `[[:alpha:]]` matches all alphabetic characters.
+- **Alphanumeric**: `[[:alnum:]]` matches all alphanumeric (digits and letters).
+
+```{r}
+text <- "Run3Forest, Run!"
+str_extract_all(text, "[[:alpha:]]+")
+str_extract_all(text, "[[:alnum:]]+")
+```
+
+<br>
+
+*Note:* Special sets can be used inside more complex sets
+
+```{r}
+text <- "Run3Forest, Run!"
+str_extract_all(text, "[[:alpha:] ,]+")
+```
+
+---
+
+## Negating Character Sets and Ranges inside `[]`
+
+- `[]` Allows you to match specific sets or ranges of characters
+- if you put an `^` at the first position inside the brackets, it negates the set
+
+#### Examples
+
+
+```{r}
+text <- "Match1234!"
+str_extract_all(text, "[^a-zA-Z0-9]+")
+```
+
+```{r}
+text <- "Run3Forest, Run!"
+str_extract_all(text, "[^[:alpha:]]+")
+str_extract_all(text, "[^[:alnum:]]+")
+```
+
+## Anchors: `^` and `$`
+
+- **Function**: Anchor symbols to match the beginning `^` and end `$` of a line.
+
+#### Examples
+
+- `"^M"` matches lines starting with 'M'
+- `"ing$"` matches lines ending with 'ing'
+
+```{r}
+text <- c("Morning", "Evening")
+grepl("^M", text)
+grepl("ing$", text)
+```
+
+<br>
+
+*Notes:* 
+
+- `^` and `$` can be used together to match whole lines
+- remember from the previous slides that `^` used inside `[...]` has a different function (it negates the set)
+
+---
+
+## Grouping with `(...)`
+
+`(...)` enables logical grouping of part of a pattern and can be used together with quantifiers
+
+#### Example
+
+```{r}
+text <- c("banana", "ananas", "Shalalalala")
+str_extract_all(text, "(na)+")
+```
+<br>
+
+**_Important:_** Because `(` and `)` are used as special symbols, they need to be escaped with `\\` when used as literal characters.
+
+```{r}
+text <- "+49 (0) 176 1234 56 78"
+str_extract_all(text, "\\(0\\).+")
+```
+
+---
+
+## Using `|` for Combining Patterns ("Alternation")
+
+- **Function**: The `|` character ("pipe") acts as an OR operator.
+- **Example**: `"cat|dog"` matches 'cat' or 'dog'.
+
+```{r}
+text <- "cats and dogs"
+str_extract_all(text, "(cat|dog)")
+```
+
+---
+
+# Exercises
+
+## Exercises
+
+Read the sample of the ParlSpeech2 *UK Hose of Commons* corpus I have created
+
+```{r} 
+#| eval: false
+library(readr)
+fp <- file.path("data", "datasets", "parlspeech2_gbr_sample.tsv")
+df <- read_tsv(fp)
+```
+
+1. What is the share of speeches that starts with the words "The" or "My".
+2. "hon." who?
+    1. Extract all occurrences of the pattern "hon." followed by a white space and a title-case word
+    2. Count the number of times the words after "hon." occur
+
+---
+
+## Using regex for data reshaping
+
+the `tidyr` pattern provides helpful functions for reshaping data using regex.
+
+- **`separate()`**: splits a column into multiple columns based on a regex pattern
+
+<br>
+
+#### Examples
+
+```{r}
+text <- c("John was born in 1980", "Mike was born in 1990")
+df <- data.frame(text)
+print(df)
+tidyr::separate(df, text, into = c("name", "year"), sep = " was born in ")
+```
+---
+
+## Using regex for data reshaping
+
+the `tidyr` pattern provides helpful functions for reshaping data using regex.
+
+- `separate()`: splits a column into multiple columns based on a regex pattern
+- **`seperate_rows()`**: splits a column into multiple rows based on a regex pattern
+
+#### Examples
+
+```{r}
+# example for use of separate_rows()
+df <- data.frame(
+  group = c("A", "B"), 
+  text = c("John, Mike", "Alice, Bob, and Luis")
+)
+print(df)
+tidyr::separate_rows(df, text, sep = ", (and )?")
+```
+
+---
+
+## Exercises (*continued*)
+
+MPs in the *House of Commons* sometimes address other MPs by referring to their constituency. 
+
+#### The pattern 
+
+- starts with "Member" or "Members"
+- might be followed by "of Parliament" 
+- next comes "for"  and the constituency name, which consists of one ore more title-case words (might be connected with a "-") that might be separated by a comma or an "and"
+- the constituency name might be followed by the MP's name in parentheses
+- if several members are mentioned, individual constituencies are separated by "and" and each starts with "for"
+
+
+#### Examples
+
+```
+"Member for Stratford", "Member for Halifax (Mrs Riordan)", "Member for South-West Norfolk (Mrs. Shephard)", 
+"Member for Hamilton, South (Mr. Tynan)", "Member for Edinburgh, East and Musselburgh (Dr. Strang)",
+"Members for South Derbyshire (Mr. Todd) and for North Durham"
+```
+
+1. Extract all occurrences of this pattern. 
+2. Which are the 20 most (least) frequently mentioned constituencies?
+3. Which are the 20 most (least) frequently mentioned MPs?
+
+---
