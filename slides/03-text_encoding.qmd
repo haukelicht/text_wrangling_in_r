@@ -1,5 +1,5 @@
 ---
-title: Text encoding (theory)
+title: "&#x1F525; Text encoding (theory) &#x1F525;"
 author: Hauke Licht
 institute: "University of Cologne"
 date: last-modified
@@ -12,6 +12,8 @@ format:
 echo: true
 code-annotations: select
 ---
+
+🔥
 
 ## Getting the basics straight
 

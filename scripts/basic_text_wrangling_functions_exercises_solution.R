@@ -26,6 +26,27 @@ df <- read_tsv(fp)
 # 3. use `dplyr::summarize` and `paste` to aggregate ("combine") speeches by party and date
 # 4. use `dplyr::mutate` and `sprintf` to create a new column with a unique identifier for each party--date text unit
 
+# first_group <- df |> 
+#   head(6) |> 
+#   group_split(date, party) |> 
+#   first()
+# 
+# with(first_group, paste(substr(text, 1, 10), sep = "<SEP>"))
+# 
+# paste(
+#   c("a", "b"), 
+#   c("1", "2"), 
+#   sep = "_"
+# )
+# 
+# paste(
+#   c("speech 1", "speech 2"), 
+#   collapse = " "
+# )
+
+
+# all from dplyr: see https://dplyr.tidyverse.org/articles/grouping.html
+vignette(package = "dplyr")
 party_date_speeches <- df |> 
   group_by(date, party) |> 
   summarize(text = paste(text, collapse = " ")) |>
@@ -44,20 +65,43 @@ party_date_speeches <- party_date_speeches |>
   )
 
 # 4. Summarize the proportion of party--date text units that contain the term "Brexit" by party and year
+
+# options to get the year from a Date column
+format(party_date_speeches$date, "%Y")
+lubridate::year(party_date_speeches$date)
+as.character(party_date_speeches$date)
+substr(party_date_speeches$date, 1, 4)
+
 # 5. Analyze:
 #     1. In what year was the term "Brexit" most prevalent?
 #     2. Does the answer to 5.1 depend on the party?
 
-party_date_speeches |> 
+first_group <- party_date_speeches |> 
+  ungroup() |> 
+  mutate(year = as.integer(substr(text_id, 1, 4))) |> 
+  group_split(year, party) |> 
+  first()
+
+View(first_group)
+
+with(first_group, sum(mentions_brexit)/length(mentions_brexit))
+with(first_group, mean(mentions_brexit))
+
+party_year_brexit_mentions <- party_date_speeches |> 
+  ungroup() |> 
   mutate(year = as.integer(substr(text_id, 1, 4))) |> 
   filter(year > 2010) |>
   group_by(year, party) |> 
   summarize(
     prop_mentions_brexit = mean(mentions_brexit)
   ) |> 
-  ungroup() |> 
+  ungroup() 
+
+party_year_brexit_mentions |> 
   pivot_wider(names_from = "party", values_from = "prop_mentions_brexit") |> 
   round(3)
+
+party_date_speeches$year <- substr(party_date_speeches$date, 1, 4)
 
 ## Exercise 1. third part ----
 
